@@ -1,0 +1,49 @@
+node
+{
+ properties([
+    buildDiscarder(logRotator(numToKeepStr: '3')),
+    pipelineTriggers([
+        pollSCM('* * * * *')
+    ])
+  ]) 
+    
+    
+    
+def MvnHome=tool name: "maven3.6.3"
+stage('Checkout code')
+{
+git branch: 'development', credentialsId: 'de904ea9-99af-4cee-b985-1139e93ad338', url: 'https://github.com/pratap09-devops/maven-web-application.git'
+}
+stage ('Build')
+{
+
+sh "${MvnHome}/bin/mvn clean package"
+}
+stage('Execute SonarqubeReport')
+{
+
+sh "${MvnHome}/bin/mvn sonar:sonar"
+
+}
+stage('UploadArtifactintonexus')
+{
+sh "${MvnHome}/bin/mvn deploy"
+
+}
+stage('DeployApplicationintoTomcat')
+{
+sshagent(['1fdcd7b5-5252-46f7-86d2-8871b571d390']) {
+sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@13.233.190.9:/opt/apache-tomcat-9.0.30/webapps/"
+}
+}
+stage('SendEmailNotificatio')
+{
+emailext body: '''Build is over
+
+regards,
+N pratap''', subject: 'Build is over', to: 'pratap.narayana09@gmail.com'
+
+}
+
+}
+
