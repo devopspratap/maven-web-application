@@ -1,20 +1,20 @@
 node
 {
- properties([
+/* properties([
     buildDiscarder(logRotator(numToKeepStr: '3')),
     pipelineTriggers([
         pollSCM('* * * * *')
     ])
   ]) 
     
-    
+    */
     
 def MvnHome=tool name: "maven3.6.3"
 stage('Checkout code')
 {
 git branch: 'development', credentialsId: 'de904ea9-99af-4cee-b985-1139e93ad338', url: 'https://github.com/pratap09-devops/maven-web-application.git'
 }
-stage ('Build')
+/* stage ('Build')
 {
 
 sh "${MvnHome}/bin/mvn clean package"
@@ -44,6 +44,6 @@ regards,
 N pratap''', subject: 'Build is over', to: 'pratap.narayana09@gmail.com'
 
 }
-
+*/
 }
 
